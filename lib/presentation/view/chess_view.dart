@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chess_game/domain/entity/chess_entity.dart'; // <-- IMPORT THIS
-
-// <-- IMPORT THE CHESS VECTORS PACKAGE
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
-
 import '../../core/error/service_locator/service_locator.dart';
 import '../view_model/chess_event.dart';
 import '../view_model/chess_state.dart';
@@ -19,12 +16,12 @@ class ChessBoardView extends StatelessWidget {
       create: (context) => sl<ChessBloc>()..add(InitializeBoardEvent()),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Flutter Chess Game'),
+          title: const Text('Chess Game'),
           actions: [
             Builder(
               builder: (context) {
                 return IconButton(
-                  icon: const Icon(Icons.refresh),
+                  icon: const Icon(Icons.refresh, size: 30),
                   onPressed: () =>
                       context.read<ChessBloc>().add(ResetGameEvent()),
                 );

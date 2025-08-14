@@ -14,7 +14,6 @@ class ValidateMoveUseCase {
     if (piece == null) {
       return false;
     }
-
     // A piece cannot capture a piece of the same color
     final destinationPiece = board[toRow][toCol];
     if (destinationPiece != null && destinationPiece.isWhite == piece.isWhite) {
@@ -122,7 +121,6 @@ class ValidateMoveUseCase {
   ) {
     final dRow = (toRow - fromRow).abs();
     final dCol = (toCol - fromCol).abs();
-
     return (dRow == 2 && dCol == 1) || (dRow == 1 && dCol == 2);
   }
 
@@ -160,7 +158,6 @@ class ValidateMoveUseCase {
   ) {
     final dRow = (toRow - fromRow).abs();
     final dCol = (toCol - fromCol).abs();
-
     return dRow <= 1 && dCol <= 1;
   }
 }
