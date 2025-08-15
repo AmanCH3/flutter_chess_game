@@ -38,6 +38,27 @@ class ChessBoardView extends StatelessWidget {
               if (state is ChessError) {
                 return Text('Error: ${state.message}');
               }
+
+              if (state is ChessGameOver) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Game Over',
+                        style: TextStyle(color: Colors.red, fontSize: 55),
+                      ),
+
+                      const SizedBox(height: 16),
+                      Text(
+                        '${state.winner} wins by checkmate',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                    ],
+                  ),
+                );
+              }
+
               if (state is ChessLoaded) {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -47,6 +68,17 @@ class ChessBoardView extends StatelessWidget {
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 16),
+
+                    if (state.isCheck == true)
+                      Text(
+                        'Check !',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.headlineSmall?.copyWith(color: Colors.red),
+                      ),
+
+                    SizedBox(height: 16),
+
                     AspectRatio(
                       aspectRatio: 1.0,
                       child: Container(

@@ -10,8 +10,13 @@ final sl = GetIt.instance;
 
 void setupLocator() {
   sl.registerFactory(
-    () => ChessBloc(initializeBoardUseCase: sl(), validateMoveUseCase: sl()),
+    () => ChessBloc(
+      initializeBoardUseCase: sl(),
+      validateMoveUseCase: sl(),
+      chessRulesService: sl(),
+    ),
   );
+  sl.registerLazySingleton(() => ChessRulesService()) ;
   sl.registerLazySingleton(() => GetInitialBoardUseCase(sl()));
   sl.registerLazySingleton(() => ValidateMoveUseCase(sl()));
   sl.registerLazySingleton<ChessRepository>(

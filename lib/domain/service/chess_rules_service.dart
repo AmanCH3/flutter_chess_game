@@ -37,6 +37,67 @@ class ChessRulesService {
     return board;
   }
 
+  Point<int>? _findKing(List<List<ChessEntity?>> board, bool isWhite) {
+    for (int r = 0; r < 8; r++) {
+      for (int c = 0; c < 8; c++) {
+        final piece = board[r][c];
+        if (piece != null &&
+            piece.type == ChessPieceType.king &&
+            piece.isWhite == isWhite) {
+          return Point(r, c);
+        }
+      }
+    }
+    return null;
+  }
+
+  bool isKingInCheck(List<List<ChessEntity?>> board, bool isWhite) {
+    final kingPos = _findKing(board, isWhite);
+    if (kingPos == null) return false;
+
+    for (int r = 0; r < 8; r++) {
+      for (int c = 0; c < 8; c++) {
+        final piece = board[r][c];
+        if (piece != null && piece.isWhite != isWhite) {
+          if (_validateMoveUnchecked(board, r, c, kingPos.x, kingPos.y)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  bool isCheckmate(List<List<ChessEntity?>> board, bool isWhite) {
+    if (!isKingInCheck(board, isWhite)) {
+      return false;
+    }
+
+    for (int r = 0; r < 8; r++) {
+      for (int c = 0; c < 8; c++) {
+        final piece = board[r][c];
+        if (piece != null && piece.isWhite == isWhite) {
+          for (int toRow = 0; toRow < 8; toRow++) {
+            for (int toCol = 0; toCol < 8; toCol++) {
+              if (validateMove(
+                board: board,
+                fromRow: r,
+                fromCol: c,
+                toRow: toRow,
+                toCol: toCol,
+              )) {
+                // If any valid move exists, it's not checkmate
+                return false;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return true; // No valid moves found
+  }
+
   bool validateMove({
     required List<List<ChessEntity?>> board,
     required int fromRow,
@@ -44,14 +105,34 @@ class ChessRulesService {
     required int toRow,
     required int toCol,
   }) {
-    // initial position of the piece
     final piece = board[fromRow][fromCol];
+    if (piece == null) return false;
 
+    if (!_validateMoveUnchecked(board, fromRow, fromCol, toRow, toCol)) {
+      return false;
+    }
+
+    final tempBoard = List.generate(
+      8,
+      (i) => List<ChessEntity?>.from(board[i]),
+    );
+    tempBoard[toRow][toCol] = piece;
+    tempBoard[fromRow][fromCol] = null;
+
+    return !isKingInCheck(tempBoard, piece.isWhite);
+  }
+
+  bool _validateMoveUnchecked(
+    List<List<ChessEntity?>> board,
+    int fromRow,
+    int fromCol,
+    int toRow,
+    int toCol,
+  ) {
+    final piece = board[fromRow][fromCol];
     if (piece == null) return false;
 
     final destinationPiece = board[toRow][toCol];
-
-    // explaination needed
     if (destinationPiece != null && destinationPiece.isWhite == piece.isWhite) {
       return false;
     }
@@ -98,15 +179,14 @@ class ChessRulesService {
     }
 
     if (fromRow == startRow &&
-        fromCol ==
-            toCol && // must be same since can move one step at a step so col must not change
+        fromCol == toCol &&
         fromRow + 2 * direction == toRow &&
         board[toRow][toCol] == null &&
         board[fromRow + direction][fromCol] == null) {
       return true;
     }
 
-    if ((toCol == fromCol + 1 || toCol == fromCol - 1) && // black and white
+    if ((toCol == fromCol + 1 || toCol == fromCol - 1) &&
         toRow == fromRow + direction &&
         board[toRow][toCol] != null &&
         board[toRow][toCol]!.isWhite != isWhite) {

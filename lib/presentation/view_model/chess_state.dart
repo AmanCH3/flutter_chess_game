@@ -16,11 +16,13 @@ class ChessLoaded extends ChessState {
   final bool isWhiteTurn;
   final int? selectedRow;
   final int? selectedCol;
+  final bool? isCheck;
   ChessLoaded({
     required this.board,
     this.isWhiteTurn = true,
     this.selectedCol,
     this.selectedRow,
+    this.isCheck,
   });
 
   ChessLoaded copyWith({
@@ -28,6 +30,7 @@ class ChessLoaded extends ChessState {
     bool? isWhiteTurn,
     int? selectedRow,
     int? selectedCol,
+    bool? isCheck,
     bool clearSelection = false,
   }) {
     return ChessLoaded(
@@ -35,11 +38,18 @@ class ChessLoaded extends ChessState {
       isWhiteTurn: isWhiteTurn ?? this.isWhiteTurn,
       selectedCol: clearSelection ? null : selectedCol ?? this.selectedCol,
       selectedRow: clearSelection ? null : selectedRow ?? this.selectedRow,
+      isCheck: isCheck ?? this.isCheck,
     );
   }
 
   @override
-  List<Object?> get props => [board, isWhiteTurn, selectedCol, selectedRow];
+  List<Object?> get props => [
+    board,
+    isWhiteTurn,
+    selectedCol,
+    selectedRow,
+    isCheck,
+  ];
 }
 
 class ChessError extends ChessState {
@@ -49,4 +59,13 @@ class ChessError extends ChessState {
 
   @override
   List<Object?> get props => [message];
+}
+
+class ChessGameOver extends ChessState {
+  final String winner;
+
+  const ChessGameOver({required this.winner});
+
+  @override
+  List<Object?> get props => [winner];
 }

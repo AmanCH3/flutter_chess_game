@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_chess_game/domain/entity/chess_entity.dart';
+import 'package:flutter_chess_game/domain/service/chess_rules_service.dart';
 import 'package:flutter_chess_game/domain/usecase/initialize_board_usecase.dart';
 import 'package:flutter_chess_game/domain/usecase/validate_move_usecase.dart';
 import 'package:flutter_chess_game/presentation/view_model/chess_event.dart';
@@ -9,10 +10,12 @@ import 'package:flutter_chess_game/presentation/view_model/chess_state.dart';
 class ChessBloc extends Bloc<ChessEvent, ChessState> {
   final GetInitialBoardUseCase initializeBoardUseCase;
   final ValidateMoveUseCase validateMoveUseCase;
+  final ChessRulesService chessRulesService;
 
   ChessBloc({
     required this.initializeBoardUseCase,
     required this.validateMoveUseCase,
+    required this.chessRulesService,
   }) : super(ChessInitial()) {
     on<InitializeBoardEvent>(_onInitializeBoard);
     on<ResetGameEvent>(_onInitializeBoard);
@@ -54,6 +57,7 @@ class ChessBloc extends Bloc<ChessEvent, ChessState> {
         ),
       );
 
+      // Extract boolean from Either
       final isValid = result.fold((failure) => false, (success) => success);
 
       if (isValid) {
@@ -79,13 +83,18 @@ class ChessBloc extends Bloc<ChessEvent, ChessState> {
 
     newBoard[targetRow][targetCol] = selectedPiece;
     newBoard[currentState.selectedRow!][currentState.selectedCol!] = null;
+    final opponentIsWhite = !currentState.isWhiteTurn;
 
-    emit(
-      currentState.copyWith(
-        board: newBoard,
-        isWhiteTurn: !currentState.isWhiteTurn,
-        clearSelection: true,
-      ),
-    );
+    if (chessRulesService.isCheckmate(newBoard, opponentIsWhite)) {
+      emit(ChessGameOver(winner: currentState.isWhiteTurn ? 'White' : 'Black'));
+    } else {
+      emit(
+        currentState.copyWith(
+          board: newBoard,
+          isWhiteTurn: !currentState.isWhiteTurn,
+          clearSelection: true,
+        ),
+      );
+    }
   }
 }
