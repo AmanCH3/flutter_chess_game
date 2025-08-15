@@ -1,5 +1,6 @@
 import 'package:flutter_chess_game/data/repository/chess_repository_impl.dart';
 import 'package:flutter_chess_game/domain/repostiory/chess_repository.dart';
+import 'package:flutter_chess_game/domain/service/chess_rules_service.dart';
 import 'package:flutter_chess_game/domain/usecase/initialize_board_usecase.dart';
 import 'package:flutter_chess_game/domain/usecase/validate_move_usecase.dart';
 import 'package:flutter_chess_game/presentation/view_model/chess_view_model.dart';
@@ -12,6 +13,8 @@ void setupLocator() {
     () => ChessBloc(initializeBoardUseCase: sl(), validateMoveUseCase: sl()),
   );
   sl.registerLazySingleton(() => GetInitialBoardUseCase(sl()));
-  sl.registerLazySingleton(() => ValidateMoveUseCase());
-  sl.registerLazySingleton<ChessRepository>(() => ChessRepositoryImpl());
+  sl.registerLazySingleton(() => ValidateMoveUseCase(sl()));
+  sl.registerLazySingleton<ChessRepository>(
+    () => ChessRepositoryImpl(chessRulesService: ChessRulesService()),
+  );
 }

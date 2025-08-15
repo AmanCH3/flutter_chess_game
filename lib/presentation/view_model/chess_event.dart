@@ -13,7 +13,6 @@ class InitializeBoardEvent extends ChessEvent {}
 class SqaureTappedEvent extends ChessEvent {
   final int row;
   final int col;
-
   const SqaureTappedEvent({required this.row, required this.col});
   @override
   List<Object?> get props => [row, col];

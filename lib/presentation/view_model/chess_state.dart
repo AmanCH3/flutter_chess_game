@@ -3,7 +3,6 @@ import 'package:flutter_chess_game/domain/entity/chess_entity.dart';
 
 abstract class ChessState extends Equatable {
   const ChessState();
-
   @override
   List<Object?> get props => [];
 }
@@ -17,7 +16,6 @@ class ChessLoaded extends ChessState {
   final bool isWhiteTurn;
   final int? selectedRow;
   final int? selectedCol;
-
   ChessLoaded({
     required this.board,
     this.isWhiteTurn = true,

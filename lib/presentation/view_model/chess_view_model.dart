@@ -15,7 +15,7 @@ class ChessBloc extends Bloc<ChessEvent, ChessState> {
     required this.validateMoveUseCase,
   }) : super(ChessInitial()) {
     on<InitializeBoardEvent>(_onInitializeBoard);
-    on<ResetGameEvent>(_onInitializeBoard); // Resetting is same as initializing
+    on<ResetGameEvent>(_onInitializeBoard);
     on<SqaureTappedEvent>(_onSquareTapped);
   }
 
@@ -28,7 +28,10 @@ class ChessBloc extends Bloc<ChessEvent, ChessState> {
     );
   }
 
-  void _onSquareTapped(SqaureTappedEvent event, Emitter<ChessState> emit) {
+  void _onSquareTapped(
+    SqaureTappedEvent event,
+    Emitter<ChessState> emit,
+  ) async {
     final currentState = state;
     if (currentState is! ChessLoaded) return;
 
@@ -41,19 +44,21 @@ class ChessBloc extends Bloc<ChessEvent, ChessState> {
     );
 
     if (currentState.selectedRow != null) {
-      // Use the new use case to validate the move
-      final bool isValid = validateMoveUseCase(
-        board: currentState.board,
-        fromRow: currentState.selectedRow!,
-        fromCol: currentState.selectedCol!,
-        toRow: row,
-        toCol: col,
+      final result = await validateMoveUseCase(
+        ValidateMoveParams(
+          board: currentState.board,
+          fromRow: currentState.selectedRow!,
+          fromCol: currentState.selectedCol!,
+          toRow: row,
+          toCol: col,
+        ),
       );
+
+      final isValid = result.fold((failure) => false, (success) => success);
 
       if (isValid) {
         _movePiece(emit, currentState, newBoard, row, col);
       } else {
-        // If the move is invalid, just clear the selection
         emit(currentState.copyWith(clearSelection: true));
       }
     } else if (tappedPiece != null &&

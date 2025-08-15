@@ -71,7 +71,6 @@ class ChessBoardView extends StatelessWidget {
 
                             return GestureDetector(
                               onTap: () => context.read<ChessBloc>().add(
-                                // Assuming your event is named SquareTappedEvent
                                 SqaureTappedEvent(row: row, col: col),
                               ),
                               child: Container(
@@ -79,13 +78,11 @@ class ChessBoardView extends StatelessWidget {
                                     ? Colors.brown[200]
                                     : Colors.brown[600],
                                 child: Stack(
-                                  alignment:
-                                      Alignment.center, // Center the piece
+                                  alignment: Alignment.center,
                                   children: [
                                     if (piece != null)
                                       LayoutBuilder(
                                         builder: (context, constraints) {
-                                          // Pass the piece and the size to our helper
                                           return _getPieceWidget(
                                             piece,
                                             constraints.maxWidth,
